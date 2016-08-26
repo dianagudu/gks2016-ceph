@@ -35,7 +35,7 @@ On your personal laptop, you will only need:
 Linux or Mac, this is already installed; on Windows, I would recommend
 [PuTTY](http://www.putty.org/).
 * a web browser to access the course material on
-  [github](https://github.com/dianagudu/gks2015-ceph).
+  [github](https://github.com/dianagudu/gks2016-ceph).
 * **optionally**: a git client, if you wish to clone the course material and
   view it locally.
 
