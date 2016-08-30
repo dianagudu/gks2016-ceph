@@ -1,0 +1,459 @@
+\documentclass[10pt, compress]{beamer}
+
+\usetheme{m}
+
+\usepackage{booktabs}
+\usepackage[scale=2]{ccicons}
+
+\usepgfplotslibrary{dateplot}
+\usepackage{tikz}
+\usetikzlibrary{shapes,shadows,calc}
+\usepgflibrary{arrows}
+\usetikzlibrary{fit}
+
+\usepackage{textpos}
+\usepackage[normalem]{ulem}
+
+\title{ceph tutorial}
+\subtitle{GridKA School 2016}
+\date{\today}
+\author{Diana Gudu}
+\institute[KIT]{Karlsruhe Institute of Technology}
+
+\hypersetup{colorlinks,urlcolor=mLightBrown}
+
+\begin{document}
+
+\maketitle
+
+\section{introduction round}
+\begin{frame}[fragile]
+    \frametitle{\textgreater~whoami}
+    \begin{block}{Diana Gudu}
+    \begin{itemize}
+        \item PhD researcher in Computer Science @KIT
+            \begin{itemize}
+                \item distributed multi-agent framework for trading cloud 
+                    resources
+            \end{itemize}
+        \item Human Brain Project
+            \begin{itemize}
+                \item work on cloud storage and computing services
+            \end{itemize}
+        \item MSc in Computational Science and Engineering @TU Munich
+        \item BSc in Computer Science @Polytechnic University of Bucharest
+    \end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{\textgreater~whoareyou}
+    \centering \texttt{\textgreater\_}
+\end{frame}
+
+\section{evolution of storage}
+\begin{frame}[fragile]
+  \frametitle{evolution of storage}
+    \begin{center}
+        \input{history-storage-1.tikz}
+    \end{center}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{storage appliance}
+    \begin{center}
+    \includegraphics[width=0.7\textwidth]{7420_front_zoom}\\
+    \fontsize{5}{5}\selectfont \href   
+    {http://www.e-business.com/zfs-7420-storage-appliance}{\copyright Oracle}
+    \end{center}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{future of storage}
+    \begin{columns}
+        \column{.5\textwidth}
+        \input{storage-appliance.tikz}
+        \column{.5\textwidth}
+        \input{ceph-model.tikz}
+    \end{columns}
+\end{frame}
+
+
+\section{ceph}
+\begin{frame}[fragile]
+  \frametitle{ceph}
+    \begin{columns}
+        \column{.45\textwidth}
+            \begin{block}{Philosophy}
+                \begin{itemize}[<+->]
+                \item open-source
+                \item community focused
+                \item software-defined
+                \item scale-out hardware, no SPF
+                \item self-managing
+                \item failure is normal
+                \end{itemize}
+                \vspace*{5mm}
+            \end{block}
+        \column{.55\textwidth}
+            \only<7->{
+            \begin{block}{History}
+                \vspace*{5mm}
+                \begin{center}
+                \input{ceph-history.tikz}
+            \end{center}
+            \end{block}
+            }
+    \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{ceph architecture}
+    \begin{center}
+        \alt<2>{
+        \input{ceph-arch-detail.tikz}
+        }{
+        \input{ceph-arch.tikz}
+        }
+    \end{center}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{rados}
+    \begin{center}
+        \input{rados.tikz}
+    \end{center}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{ceph daemons}
+    \begin{columns}
+        \column{.5\textwidth}
+            \begin{block}{OSD}
+                \begin{itemize}
+                \item serve objects to clients
+                \item one per disk
+                \item backend: btrfs, xfs, ext4
+                \item peer-to-peer replication and recovery
+                \item write-ahead journal
+            \end{itemize}
+            \end{block}
+        \column{.5\textwidth}
+            \begin{block}{MON}
+                \begin{itemize}
+                \item maintain cluster state and membership
+                \item vote for distributed decision-making
+                \item small, odd number
+                \end{itemize}
+                \vspace*{8mm}
+            \end{block}
+    \end{columns}
+\end{frame}
+
+\section{data placement}
+% CRUSH
+% pools
+% placement groups
+\begin{frame}[fragile]
+    \frametitle{challenges}
+    \begin{block}{How to\dots}
+        \begin{itemize}[<+->]
+            \item[]\dots ensure \textit{infinite} scalability?
+                \begin{itemize}
+                    \item \textbf{compute} object locations instead of looking 
+                        them up
+                \end{itemize}
+            \item[]\dots ensure deterministic placement?
+                \begin{itemize}
+                    \item \textbf{pseudo} random algorithm
+                \end{itemize}
+            \item[]\dots minimize data movement?
+                \begin{itemize}
+                    \item stable mapping, e.g. consistent hashing
+                \end{itemize}
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{crush}
+    \begin{block}{\alert{C}ontrolled \alert{R}eplication \alert{U}nder 
+        \alert{S}calable \alert{H}ashing}
+    \begin{itemize}
+        \item pseudo-random placement algorithm
+        \item repeatable, deterministic
+        \item statistically uniform distribution
+        \item stable mapping: minimal data migration
+        \item rule-based configuration, topology aware
+    \end{itemize}
+    \only<1>{\vspace*{35mm}}
+    \only<2>{
+    \begin{center}
+        \input{topology.tikz}
+    \end{center}
+    }
+\end{block}
+\end{frame}
+
+\setlength{\TPHorizModule}{\textwidth}
+\setlength{\TPVertModule}{\textheight}
+
+\begin{frame}[fragile]
+    \frametitle{crush}
+    \begin{textblock}{.8}(.15,-0.2)
+        \input{crush.tikz}
+    \end{textblock}
+\end{frame}
+
+\begin{frame}
+    \frametitle{data placement}
+    \begin{textblock}{.45}(0,-0.2)
+        \begin{block}{Pools}
+            \begin{itemize}
+                \item logical groups for storing objects
+                \item manage
+                    \begin{itemize}
+                        \item \# PGs
+                        \item \# replicas
+                        \item ruleset
+                        \item permissions
+                        \item snapshots
+                    \end{itemize}
+            \end{itemize}
+        \end{block}
+    \end{textblock}
+    \uncover<2->{
+    \begin{textblock}{.55}(.45,-0.2)
+        \begin{block}{Placement groups}
+            \begin{itemize}
+                \item fragments of logical groups
+                    \begin{itemize}
+                    \item aggregate objects within a pool for scalability
+                    \end{itemize}
+                \item 1 PG over several OSDs ( \# replicas)
+                \item several PGs per OSD ( $\approx$ 100)
+                \item more PGs
+                    \begin{itemize}
+                    \item[]$\implies$ data durability
+                    \item[]$\implies$ even distribution
+                    \item[]$\implies$ resource overhead
+                    \end{itemize}
+            \end{itemize}
+        \end{block}
+    \end{textblock}
+    }
+\end{frame}
+
+\section{ceph clients}
+\begin{frame}[fragile]
+    \frametitle{librados}
+    \begin{itemize}
+        \item direct access to RADOS for applications
+        \item C, C++, Python, Java, Erlang, PHP
+        \item native socket access, no HTTP overhead
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{radosgw}
+    \begin{itemize}
+        \item RESTful API
+        \item unified object namespace
+        \item S3 and Swift compatible
+        \item user database and access control
+        \item usage accounting, billing
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{rbd}
+    \begin{itemize}
+        \item storage of disk images in RADOS
+        \item images are striped across the cluster
+        \item decoupling of VMs from host
+        \item thin provisioning
+            \begin{itemize}
+                \item physical storage only used once you begin writing
+            \end{itemize}
+        \item snaphots, copy-on-write clones
+        \item support in Qemu, KVM
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{CephFS}
+    \begin{center}
+        \input{cephfs.tikz}
+    \end{center}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{CephFS}
+    \begin{itemize}
+        \item files striped over RADOS objects
+        \item strong consistency for POSIX semantics
+        \begin{itemize}
+            \item use O\_LAZY to relax consistency
+        \end{itemize}
+    \end{itemize}
+    \uncover<2>{
+    \begin{block}{Metadata Server}
+        \begin{itemize}
+            \item manages metadata for POSIX-compliant filesystem
+                \begin{itemize}
+                    \item directory hierarchy
+                    \item file metadata: owner, timestamps, mode etc
+                \end{itemize}
+            \item stores metadata in RADOS
+            \item multiple MDS for HA and load balancing
+        \end{itemize}
+    \end{block}
+    }
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{dynamic subtree partitioning}
+    \begin{center}
+        \input{dynsp.tikz}
+    \end{center}
+\end{frame}
+
+\section{final remarks}
+\begin{frame}[fragile]
+    \frametitle{what makes ceph unique}
+    \begin{itemize}
+        \item CRUSH magic
+        \item clustered, dynamic metadata management
+        \item thin provisioning of block storage
+        \item unified storage (object, block, file)
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{ceph vs. them\footnotemark}
+    {\scriptsize
+    \begin{tabular}{|l|c|c|c|c|c|}
+    \hline
+    & \textbf{HDFS} & \textbf{iRODS} & \textbf{\alert{Ceph}} & 
+    \textbf{GlusterFS} & \textbf{Lustre} \\
+    \hline
+    \hline
+    \textbf{Architecture} & centralized & centralized & \alert{distributed} & 
+    decentralized & centralized \\
+    \hline
+    \textbf{Naming} & index & database & \alert{CRUSH} & EHA & index \\
+    \hline
+    \textbf{API} & CLI, FUSE, & CLI, FUSE, & \alert{FUSE, mount,} & FUSE, mount 
+    & FUSE \\
+    & REST, API & API & \alert{REST} & & \\
+    \hline
+    \textbf{Fault} & fully connect. & P2P & \alert{fully connect.} & detected & 
+    manually \\
+    \textbf{detection} & & & & & \\
+    \hline
+    \textbf{System} & no failover & no failover & \alert{high} & high & 
+    failover \\
+    \textbf{availability} & & & & & \\
+    \hline
+    \textbf{Data} & replication & replication & \alert{replication} & RAID-like 
+    & no \\
+    \textbf{availability} & & & & & \\
+    \hline
+    \textbf{Placement} & auto & manual & \alert{auto} & manual & no \\
+    \textbf{strategy} & & & & & \\
+    \hline
+    \textbf{Replication} & async. & sync. & \alert{sync.} & sync. & RAID-like 
+    \\
+    \hline
+    \textbf{Cache} & WORM, lease & lock & \alert{lock} & no & lock \\
+    \textbf{consistency} & & & & & \\
+    \hline
+    \textbf{Load} & auto & manual & \alert{manual} & manual & no \\
+    \textbf{balancing} & & & & & \\
+    \hline
+    \end{tabular}
+    }
+    \footnotetext[1]{\tiny
+    Benjamin Depardon, G{\"e}l Le Mahec, Cyril S{\'e}guin. Analysis of Six 
+    Distributed File Systems. [Research Report] 2013, pp.44.  
+    \href{https://hal.inria.fr/hal-00789086}{<hal-00789086>}
+    }
+\end{frame}
+
+\newcommand\redsout{\bgroup\markoverwith{\textcolor{red}{\rule[0.5ex]{2pt}{0.4pt}}}\ULon}
+
+\begin{frame}[fragile]
+    \frametitle{practical considerations}
+    \begin{itemize}
+        \item separate cluster and public networks
+        \item SSD journals: accelerate bursts and random writes
+        \item memory: 1-2 GB per OSD, CPU: 1.5 GHz per OSD
+        \item redundancy
+            \begin{itemize}
+                \item replication: increased read performance, capacity impact
+                \item erasure coding: better space efficiency, high CPU 
+                    overhead, \redsout{RBD}
+                \item cache tiering: write-back overlay pool; combine 
+                    replication and erasure coding
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{openstack integration *}
+    \begin{center}
+        \includegraphics[width=.8\textwidth]{ceph-openstack}\\
+        \fontsize{5}{5}\selectfont  
+        \href{http://chianingwang.blogspot.de/2015/01/my-first-ceph-lab-note.html}{\copyright 
+        RedHat}
+    \end{center}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{join the community!}
+    \begin{itemize}
+        \item docs: \href{http://docs.ceph.com/docs/master/}{ceph.com/docs}
+        \item wiki:
+        \href{http://tracker.ceph.com/projects/ceph/wiki/}{wiki.ceph.com}
+        \item mailing lists
+            \begin{itemize}
+                \item ceph-users: 
+                \href{mailto:ceph-users@ceph.com}{ceph-users@ceph.com}
+                \item ceph-devel: 
+            \href{mailto:ceph-devel@vger.kernel.org}{ceph-devel@vger.kernel.org}
+            \end{itemize}
+        \item IRC channels (server \href{https://www.oftc.net}{irc.oftc.net})
+            \begin{itemize}
+                \item \#ceph
+                \item \#ceph-devel
+            \end{itemize}
+        \item github: \href{https://github.com/ceph/ceph}{github.com/ceph/ceph}
+        \item get involved: 
+        \href{http://ceph.com/community/contribute/}{ceph.com/community/contribute}
+    \end{itemize}
+\end{frame}
+
+\section{tutorial}
+\begin{frame}[fragile]
+    \frametitle{overview}
+    \begin{itemize}
+        \item deploy a Ceph cluster
+        \item basic operations with the storage cluster
+        \item data placement: CRUSH
+        \item Ceph Filesystem
+        \item block storage: RBD
+        \item advanced topics: erasure coding
+        \item troubleshooting challenge
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{cluster set-up}
+    \begin{center}
+        \input{setup.tikz}
+    \end{center}
+\end{frame}
+
+%\plain{Questions?}
+
+\end{document}
