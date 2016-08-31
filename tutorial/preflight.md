@@ -59,9 +59,9 @@ We will use the gks user to deploy the Ceph cluster, which already has sudo priv
 
 Alternatively, we provide two scripts to make this process easier:
 
-* [get-private-ips.sh](get-private-ips.sh): connects to each machine using the
+* [get-private-ips.sh](get-private-ips.sh?raw=true): connects to each machine using the
   public IP, gets the private IP and adds an entry in /etc/hosts
-* [set-up-ssh-keys.sh](set-up-ssh-keys.sh): creates a pair of ssh keys and
+* [set-up-ssh-keys.sh](set-up-ssh-keys.sh?raw=true): creates a pair of ssh keys and
   adds the public key to each machine's authorized_hosts file
 
 To run these scripts, you will need to save your studentid and password in files
