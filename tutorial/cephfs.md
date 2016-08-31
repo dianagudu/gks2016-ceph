@@ -96,7 +96,7 @@ improving locality.
 Let's see how CephFS stores files and directories with a simple example:
 
     sudo mkdir /mnt/cephfs/mydir
-    sudo dd if=/dev/zerobs=4M count=3 of=/mnt/cephfs/mydir/myfile
+    sudo dd if=/dev/zero bs=4M count=3 of=/mnt/cephfs/mydir/myfile
     rados -p cephfs_data ls
     rados -p cephfs_metadata ls
 
